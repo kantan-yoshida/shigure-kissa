@@ -1,0 +1,210 @@
+:root{
+  --ink:#e9e4d8;
+  --rain:#aeb9c9;
+  --warm:#ffb867;
+  --neon:#7fe7ff;
+  --bg0:#0a0c14;
+  --bg1:#10131f;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:#05060a;
+  color:var(--ink);
+  font-family:"Shippori Mincho",serif;
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ───────── ステージ ───────── */
+#stage{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:
+    radial-gradient(120% 90% at 50% 10%, #161a2b 0%, #0a0c14 55%, #05060a 100%);
+}
+#scene{
+  width:min(100vw, 177.7vh);   /* 16:10 を保ちつつ画面いっぱい */
+  height:auto;
+  image-rendering:pixelated;
+  image-rendering:crisp-edges;
+  filter:saturate(1.05);
+}
+#vignette{
+  position:fixed; inset:0; pointer-events:none;
+  background:radial-gradient(120% 100% at 50% 55%, transparent 45%, rgba(0,0,0,.55) 100%);
+  mix-blend-mode:multiply;
+}
+
+/* HUD: ネオンの文字（canvasの上に重ねる選択肢用・既定は非表示） */
+#hud{position:fixed; inset:0; pointer-events:none}
+.hidden{display:none !important}
+
+/* ───────── 入店ゲート ───────── */
+.gate{
+  position:fixed; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  background:
+    radial-gradient(100% 80% at 50% 40%, rgba(10,12,20,.55), rgba(4,5,9,.92));
+  backdrop-filter:blur(2px);
+  z-index:20;
+  transition:opacity 1.4s ease;
+}
+.gate.fade{opacity:0; pointer-events:none}
+
+.gate-inner{
+  text-align:center;
+  padding:2.4rem 2rem;
+  max-width:34rem;
+  animation:rise 1.2s ease both;
+}
+@keyframes rise{from{opacity:0; transform:translateY(14px)}to{opacity:1; transform:none}}
+
+.gate-kicker{
+  font-family:"DotGothic16",sans-serif;
+  letter-spacing:.45em;
+  font-size:.78rem;
+  color:var(--warm);
+  opacity:.85;
+  margin-bottom:1.3rem;
+  padding-left:.45em;
+}
+.gate-title{
+  font-size:clamp(2.6rem,7vw,4.4rem);
+  font-weight:700;
+  letter-spacing:.12em;
+  line-height:1;
+  text-shadow:0 0 26px rgba(255,184,103,.25);
+}
+.gate-title span{
+  display:block;
+  font-family:"DotGothic16",sans-serif;
+  font-size:.7rem;
+  letter-spacing:.6em;
+  opacity:.55;
+  margin-top:.9rem;
+  padding-left:.6em;
+}
+.gate-lead{
+  margin:1.8rem 0 1.4rem;
+  line-height:2;
+  opacity:.85;
+  font-size:1rem;
+}
+.gate-status{
+  font-family:"DotGothic16",sans-serif;
+  font-size:.82rem;
+  min-height:1.4em;
+  color:var(--rain);
+  letter-spacing:.08em;
+  margin-bottom:1.6rem;
+  transition:color .4s;
+}
+.gate-status.rain{color:var(--neon)}
+.gate-status.clear{color:var(--warm)}
+
+.gate-actions{display:flex; gap:.9rem; justify-content:center; flex-wrap:wrap}
+
+.btn{
+  font-family:"DotGothic16",sans-serif;
+  font-size:.86rem;
+  letter-spacing:.12em;
+  padding:.85em 1.7em;
+  border:1px solid rgba(233,228,216,.28);
+  background:rgba(233,228,216,.04);
+  color:var(--ink);
+  cursor:pointer;
+  border-radius:2px;
+  transition:all .25s ease;
+}
+.btn:hover{transform:translateY(-2px)}
+.btn-main{
+  border-color:rgba(255,184,103,.6);
+  background:linear-gradient(180deg, rgba(255,184,103,.18), rgba(255,184,103,.06));
+  box-shadow:0 0 22px rgba(255,184,103,.18);
+}
+.btn-main:hover{box-shadow:0 6px 30px rgba(255,184,103,.32)}
+.btn-ghost{opacity:.7}
+.btn-ghost:hover{opacity:1}
+
+.gate-foot{
+  margin-top:2rem;
+  font-size:.78rem;
+  opacity:.4;
+  letter-spacing:.2em;
+}
+
+/* ───────── 退店（晴れ） ───────── */
+.closed{
+  position:fixed; inset:0; z-index:25;
+  display:flex; align-items:center; justify-content:center;
+  background:radial-gradient(100% 80% at 50% 40%, #1a1d2b, #07080d);
+}
+.closed-inner{text-align:center; animation:rise 1s ease both}
+.closed-jp{font-size:1.3rem; letter-spacing:.1em; line-height:2}
+.closed-sub{
+  font-family:"DotGothic16",sans-serif;
+  color:var(--warm); margin:1.2rem 0 2rem; letter-spacing:.3em; font-size:.9rem;
+}
+
+/* ───────── 入店後の挨拶 ───────── */
+.welcome{
+  position:fixed;
+  left:50%; bottom:7%;
+  transform:translateX(-50%);
+  font-family:"DotGothic16",sans-serif;
+  font-size:.9rem;
+  letter-spacing:.18em;
+  color:var(--warm);
+  text-shadow:0 0 18px rgba(255,184,103,.5);
+  z-index:15;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity 1.6s ease;
+}
+.welcome.show{opacity:.92}
+
+/* ───────── 吹き出し ───────── */
+.bubble{
+  position:fixed;
+  z-index:16;
+  max-width:240px; min-width:84px;
+  padding:.7em .95em;
+  background:#f4ecd8;
+  color:#2a211b;
+  font-family:"DotGothic16",sans-serif;
+  font-size:.78rem; line-height:1.75; letter-spacing:.04em;
+  border:2px solid #2a211b; border-radius:9px;
+  box-shadow:0 5px 0 rgba(0,0,0,.28), 0 0 26px rgba(255,184,103,.28);
+  transform:translateY(-100%) scale(.9);  /* 水平位置は left をJSで指定 */
+  transform-origin:bottom center;
+  opacity:0; pointer-events:none;
+  transition:opacity .22s ease, transform .22s ease;
+}
+.bubble.show{opacity:1; transform:translateY(-100%) scale(1)}
+.bubble .who{
+  display:block; font-size:.6rem; letter-spacing:.22em;
+  color:#b9772f; margin-bottom:.35em;
+}
+.bubble .msg{display:block; white-space:pre-line}
+.bubble.loading .msg{letter-spacing:.3em; opacity:.6}
+.bubble .tail{
+  position:absolute; left:50%; bottom:-10px; transform:translateX(-50%);
+  width:0; height:0;
+  border-left:8px solid transparent; border-right:8px solid transparent;
+  border-top:10px solid #2a211b;
+}
+.bubble .tail::after{
+  content:''; position:absolute; left:-7px; top:-11px;
+  border-left:7px solid transparent; border-right:7px solid transparent;
+  border-top:9px solid #f4ecd8;
+}
+
+@media (max-width:520px){
+  .gate-lead{font-size:.92rem}
+  .bubble{max-width:180px; font-size:.72rem}
+}

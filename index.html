@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>時雨喫茶 ─ 雨の日だけ開く</title>
+<meta name="description" content="雨の日だけ入ることができる、夜の横丁のドット絵喫茶店。" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=DotGothic16&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- ───────── シーン本体 ───────── -->
+  <main id="stage" aria-label="雨の夜の喫茶店">
+    <canvas id="scene" width="320" height="200"></canvas>
+    <div id="vignette"></div>
+
+    <!-- 画面上の演出テキスト -->
+    <div id="hud">
+      <div id="signline" class="hidden">
+        <span class="neon">深夜喫茶</span>
+        <span class="sub">時雨</span>
+      </div>
+    </div>
+  </main>
+
+  <!-- ───────── 入店ゲート ───────── -->
+  <section id="gate" class="gate">
+    <div class="gate-inner">
+      <p class="gate-kicker">― 雨音とともに ―</p>
+      <h1 class="gate-title">時雨喫茶<span>しぐれきっさ</span></h1>
+      <p class="gate-lead">この店は、雨の日だけ開きます。<br />今、あなたの空はどんな天気ですか。</p>
+
+      <div id="gate-status" class="gate-status">空模様を確かめています…</div>
+
+      <div class="gate-actions">
+        <button id="check-btn" class="btn btn-main">空を見上げる</button>
+        <button id="peek-btn" class="btn btn-ghost">そっとのぞく（デモ）</button>
+      </div>
+
+      <p class="gate-foot">傘の雫を払って、どうぞ。</p>
+    </div>
+  </section>
+
+  <!-- ───────── 退店（晴れ）メッセージ ───────── -->
+  <section id="closed" class="closed hidden">
+    <div class="closed-inner">
+      <p class="closed-jp">本日は晴れ。のれんは仕舞っております。</p>
+      <p class="closed-sub">また、雨の日に。</p>
+      <button id="retry-btn" class="btn btn-ghost">もう一度たしかめる</button>
+    </div>
+  </section>
+
+  <!-- 店内に入ったあとの一言 -->
+  <div id="welcome" class="welcome hidden">いらっしゃいませ。お好きな席へどうぞ。</div>
+
+  <script src="scene.js"></script>
+  <script src="weather.js"></script>
+  <script src="talk.js"></script>
+</body>
+</html>
