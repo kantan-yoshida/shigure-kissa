@@ -9,7 +9,6 @@
   const closed = document.getElementById('closed');
   const welcome= document.getElementById('welcome');
   const checkBtn = document.getElementById('check-btn');
-  const peekBtn  = document.getElementById('peek-btn');
   const retryBtn = document.getElementById('retry-btn');
 
   // WMO weather code → 雨判定
@@ -96,7 +95,6 @@
 
   // ── イベント ──────────────────────────────
   checkBtn.addEventListener('click', checkSky);
-  peekBtn .addEventListener('click', openCafe);   // デモ入店
   retryBtn.addEventListener('click', ()=>{
     closed.classList.add('hidden');
     setStatus('もう一度、空を見上げてみましょう。');
