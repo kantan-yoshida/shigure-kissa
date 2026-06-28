@@ -204,7 +204,31 @@ body{
   border-top:9px solid #f4ecd8;
 }
 
+/* ───────── 下の黒帯のセリフ欄（スマホ等） ───────── */
+.dock{
+  position:fixed; z-index:16;
+  left:50%; transform:translateX(-50%) translateY(8px);
+  width:min(560px, calc(100vw - 28px));
+  padding:.85em 1.1em;
+  background:rgba(20,13,9,.92);
+  color:#f4ecd8;
+  font-family:"DotGothic16",sans-serif;
+  font-size:.95rem; line-height:1.85; letter-spacing:.04em;
+  border:2px solid #5a3d22; border-radius:10px;
+  box-shadow:0 0 30px rgba(255,184,103,.18), inset 0 0 0 1px rgba(255,184,103,.10);
+  white-space:pre-line;
+  opacity:0; pointer-events:auto; cursor:pointer;
+  transition:opacity .25s ease, transform .25s ease;
+}
+.dock.show{opacity:1; transform:translateX(-50%) translateY(0)}
+.dock .who{
+  display:block; font-size:.72rem; letter-spacing:.22em;
+  color:#ffb867; margin-bottom:.45em;
+}
+.dock.loading .msg{letter-spacing:.3em; opacity:.6}
+
 @media (max-width:520px){
   .gate-lead{font-size:.92rem}
   .bubble{max-width:180px; font-size:.72rem}
+  .dock{font-size:.9rem}
 }

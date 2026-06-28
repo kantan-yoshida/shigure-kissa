@@ -41,7 +41,7 @@
     '窓の外の雨を肴に、一杯どうぞ。\n夜は、まだ長い。',
   ];
 
-  let bubble = null, hideTimer = null, reqId = 0;
+  let bubble = null, dock = null, hideTimer = null, reqId = 0;
 
   function ensureBubble(){
     if(bubble) return bubble;
@@ -68,33 +68,63 @@
     return null;
   }
 
+  function ensureDock(){
+    if(dock) return dock;
+    dock = document.createElement('div');
+    dock.className = 'dock';
+    dock.innerHTML = '<span class="who"></span><span class="msg"></span>';
+    dock.addEventListener('click', hideBubble);
+    document.body.appendChild(dock);
+    return dock;
+  }
+
+  // 黒帯が十分あれば下のセリフ欄に、無ければキャラ頭上の吹き出しに出す
   function showBubble(h, who, text, loading){
+    const r = cv.getBoundingClientRect();
+    const band = window.innerHeight - r.bottom;   // 下の黒帯の高さ
+    if(band > 70){ hideFloat(); showDock(who, text, loading, r, band); }
+    else         { hideDock();  showFloat(h, who, text, loading, r); }
+    clearTimeout(hideTimer);
+    if(!loading) hideTimer = setTimeout(hideBubble, 8000);
+  }
+
+  // ① キャラ頭上の吹き出し（PCなど黒帯が無い画面）
+  function showFloat(h, who, text, loading, r){
     const b = ensureBubble();
     b.querySelector('.who').textContent = who;
     b.querySelector('.msg').textContent = text;
     b.classList.toggle('loading', !!loading);
 
-    // キャラ頭上の画面座標
-    const p = toScreen(h.x + h.w/2, h.y - 3);
-    // 一旦置いてから実寸を測り、画面内に収める
+    const px = r.left + ((h.x + h.w/2)/320)*r.width;
+    const py = r.top  + ((h.y - 3)/200)*r.height;
     b.style.left = '0px'; b.style.top = '0px';
-    const w = b.offsetWidth;
-    const margin = 8;
-    let left = p.x - w/2;
-    left = Math.max(margin, Math.min(left, window.innerWidth - w - margin));
+    const w = b.offsetWidth, margin = 8;
+    const left = Math.max(margin, Math.min(px - w/2, window.innerWidth - w - margin));
     b.style.left = left + 'px';
-    b.style.top  = p.y + 'px';
-    // しっぽはキャラの真上を指すよう追従（吹き出し内に収める）
+    b.style.top  = py + 'px';
     const tail = b.querySelector('.tail');
-    let tx = p.x - left;
-    tx = Math.max(14, Math.min(tx, w - 14));
-    tail.style.left = tx + 'px';
+    tail.style.left = Math.max(14, Math.min(px - left, w - 14)) + 'px';
 
     requestAnimationFrame(()=> b.classList.add('show'));
-    clearTimeout(hideTimer);
-    if(!loading) hideTimer = setTimeout(hideBubble, 8000);
   }
-  function hideBubble(){ if(bubble) bubble.classList.remove('show'); }
+
+  // ② 下の黒帯に出すセリフ欄（スマホなど縦長画面）
+  function showDock(who, text, loading, r, band){
+    const d = ensureDock();
+    d.querySelector('.who').textContent = who;
+    d.querySelector('.msg').textContent = text;
+    d.classList.toggle('loading', !!loading);
+    d.style.top = '0px';
+    const dh = d.offsetHeight;
+    let top = r.bottom + Math.max(8, (band - dh)/2);   // 黒帯の中央あたり
+    top = Math.min(top, window.innerHeight - dh - 8);
+    d.style.top = top + 'px';
+    requestAnimationFrame(()=> d.classList.add('show'));
+  }
+
+  function hideFloat(){ if(bubble) bubble.classList.remove('show'); }
+  function hideDock(){  if(dock)   dock.classList.remove('show'); }
+  function hideBubble(){ hideFloat(); hideDock(); }
 
   function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
 
