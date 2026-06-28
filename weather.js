@@ -36,30 +36,39 @@
     try {
       coords = await getPosition();
     } catch(e){
-      setStatus('位置情報が得られませんでした。デモでのぞいてみてください。');
+      setStatus('位置情報が得られませんでした。位置情報をオンにしてください。');
       checkBtn.disabled = false;
       return;
     }
 
     try {
       const { latitude, longitude } = coords;
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=weather_code,precipitation,is_day`;
+      // 粗め判定：自分の地点＋周囲（約15km四方）を一括取得し、
+      // このあたりのどこかが雨なら「雨」とみなす。
+      const D = 0.15;
+      const lats = [latitude, latitude+D, latitude-D, latitude,    latitude   ];
+      const lons = [longitude, longitude,  longitude,  longitude+D, longitude-D];
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lats.join(',')}&longitude=${lons.join(',')}&current=weather_code,precipitation`;
       const res = await fetch(url);
       const data = await res.json();
-      const code = data?.current?.weather_code;
-      const precip = data?.current?.precipitation ?? 0;
+      const list = Array.isArray(data) ? data : [data];
 
-      const raining = RAIN_CODES.has(code) || precip > 0.05;
-      if (raining){
-        const label = RAIN_LABEL[code] || '雨';
-        setStatus(`いま、${label}。── どうぞ、お入りください。`, 'rain');
+      let label = null;
+      for (const p of list){
+        const code = p?.current?.weather_code;
+        const precip = p?.current?.precipitation ?? 0;
+        if (RAIN_CODES.has(code) || precip > 0.05){ label = RAIN_LABEL[code] || '雨'; break; }
+      }
+
+      if (label){
+        setStatus(`いま、このあたりは${label}。── どうぞ、お入りください。`, 'rain');
         setTimeout(openCafe, 1100);
       } else {
-        setStatus('空は乾いています。本日は晴れのよう。', 'clear');
+        setStatus('このあたりは乾いています。本日は晴れのよう。', 'clear');
         setTimeout(showClosed, 1100);
       }
     } catch(e){
-      setStatus('空模様を確かめられませんでした。デモでのぞいてみてください。');
+      setStatus('空模様を確かめられませんでした。時間をおいて、もう一度お試しください。');
       checkBtn.disabled = false;
     }
   }
