@@ -48,16 +48,17 @@
       const D = 0.15;
       const lats = [latitude, latitude+D, latitude-D, latitude,    latitude   ];
       const lons = [longitude, longitude,  longitude,  longitude+D, longitude-D];
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lats.join(',')}&longitude=${lons.join(',')}&current=weather_code,precipitation`;
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lats.join(',')}&longitude=${lons.join(',')}&current=weather_code,precipitation,rain,showers`;
       const res = await fetch(url);
       const data = await res.json();
       const list = Array.isArray(data) ? data : [data];
 
       let label = null;
       for (const p of list){
-        const code = p?.current?.weather_code;
-        const precip = p?.current?.precipitation ?? 0;
-        if (RAIN_CODES.has(code) || precip > 0.05){ label = RAIN_LABEL[code] || '雨'; break; }
+        const c = p?.current || {};
+        // 降水量・雨・にわか雨のどれかがあれば雨。天気コードでも判定。
+        const wet = (c.precipitation > 0) || (c.rain > 0) || (c.showers > 0);
+        if (RAIN_CODES.has(c.weather_code) || wet){ label = RAIN_LABEL[c.weather_code] || '雨'; break; }
       }
 
       if (label){
@@ -105,9 +106,8 @@
   // ── イベント ──────────────────────────────
   checkBtn.addEventListener('click', checkSky);
   retryBtn.addEventListener('click', ()=>{
-    closed.classList.add('hidden');
-    setStatus('もう一度、空を見上げてみましょう。');
-    checkBtn.disabled = false;
+    closed.classList.add('hidden');   // 晴れ画面を閉じて
+    checkSky();                        // その場でもう一度天気を確かめる
   });
 
   // 初期メッセージ
