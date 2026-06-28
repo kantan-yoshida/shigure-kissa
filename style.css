@@ -17,6 +17,34 @@ body{
   -webkit-font-smoothing:antialiased;
 }
 
+/* ───────── 全画面の雨夜（黒帯を夜空に） ───────── */
+#ambient{
+  position:fixed; inset:0; z-index:0;
+  background:radial-gradient(120% 90% at 50% 8%, #161a2b 0%, #0a0c14 55%, #05060a 100%);
+}
+
+/* ───────── 上の帯のネオン看板 ───────── */
+#topsign{
+  position:fixed; left:50%;
+  transform:translate(-50%,-50%);
+  z-index:6; text-align:center; pointer-events:none;
+  display:flex; flex-direction:column; align-items:center; gap:.45em;
+  opacity:0; transition:opacity 1.1s ease;
+}
+#topsign.show{opacity:1}
+#topsign .ts-name{
+  font-family:"DotGothic16",sans-serif;
+  font-size:clamp(1.2rem,5.5vw,1.9rem);
+  letter-spacing:.34em; padding-left:.34em;
+  color:#bdf0ff;
+  text-shadow:0 0 6px #7fe7ff, 0 0 16px rgba(127,231,255,.85), 0 0 30px rgba(127,231,255,.45);
+}
+#topsign .ts-sub{
+  font-family:"Shippori Mincho",serif;
+  font-size:.66rem; letter-spacing:.3em; padding-left:.3em;
+  color:#e9e4d8; opacity:.55;
+}
+
 /* ───────── ステージ ───────── */
 #stage{
   position:fixed;
@@ -24,8 +52,8 @@ body{
   display:flex;
   align-items:center;
   justify-content:center;
-  background:
-    radial-gradient(120% 90% at 50% 10%, #161a2b 0%, #0a0c14 55%, #05060a 100%);
+  background:transparent;   /* 背景は #ambient が担当 */
+  z-index:1;
 }
 #scene{
   width:min(100vw, 177.7vh);   /* 16:10 を保ちつつ画面いっぱい */
