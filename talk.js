@@ -42,12 +42,31 @@
   ];
 
   let bubble = null, dock = null, hideTimer = null, reqId = 0;
+  let cur = { who:'', text:'' };   // 表示中のセリフ（共有用）
+
+  const ACTS = '<div class="acts">'
+    + '<button class="sh-btn" data-act="text">共有</button>'
+    + '<button class="sh-btn" data-act="card">画像</button></div>';
+
+  // 共有ボタン＋自動消去の一時停止を取り付ける
+  function attachActs(el){
+    el.addEventListener('click', (e)=>{
+      const b = e.target.closest('.sh-btn'); if(!b) return;
+      e.stopPropagation();
+      if(!window.ShigureShare) return;
+      if(b.dataset.act === 'text') window.ShigureShare.shareText(cur.text, cur.who);
+      else                         window.ShigureShare.shareCard(cur.text, cur.who);
+    });
+    el.addEventListener('pointerenter', ()=> clearTimeout(hideTimer));
+    el.addEventListener('pointerleave', ()=>{ clearTimeout(hideTimer); hideTimer = setTimeout(hideBubble, 4000); });
+  }
 
   function ensureBubble(){
     if(bubble) return bubble;
     bubble = document.createElement('div');
     bubble.className = 'bubble';
-    bubble.innerHTML = '<span class="who"></span><span class="msg"></span><span class="tail"></span>';
+    bubble.innerHTML = '<span class="who"></span><span class="msg"></span>' + ACTS + '<span class="tail"></span>';
+    attachActs(bubble);
     document.body.appendChild(bubble);
     return bubble;
   }
@@ -72,14 +91,16 @@
     if(dock) return dock;
     dock = document.createElement('div');
     dock.className = 'dock';
-    dock.innerHTML = '<span class="who"></span><span class="msg"></span>';
-    dock.addEventListener('click', hideBubble);
+    dock.innerHTML = '<span class="who"></span><span class="msg"></span>' + ACTS;
+    dock.addEventListener('click', (e)=>{ if(!e.target.closest('.sh-btn')) hideBubble(); });
+    attachActs(dock);
     document.body.appendChild(dock);
     return dock;
   }
 
   // 黒帯が十分あれば下のセリフ欄に、無ければキャラ頭上の吹き出しに出す
   function showBubble(h, who, text, loading){
+    if(!loading) cur = { who, text };   // 共有用に保持
     const r = cv.getBoundingClientRect();
     const band = window.innerHeight - r.bottom;   // 下の黒帯の高さ
     if(band > 70){ hideFloat(); showDock(who, text, loading, r, band); }

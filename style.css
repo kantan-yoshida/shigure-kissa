@@ -210,7 +210,7 @@ body{
   box-shadow:0 5px 0 rgba(0,0,0,.28), 0 0 26px rgba(255,184,103,.28);
   transform:translateY(-100%) scale(.9);  /* 水平位置は left をJSで指定 */
   transform-origin:bottom center;
-  opacity:0; pointer-events:none;
+  opacity:0; pointer-events:auto;
   transition:opacity .22s ease, transform .22s ease;
 }
 .bubble.show{opacity:1; transform:translateY(-100%) scale(1)}
@@ -254,6 +254,32 @@ body{
   color:#ffb867; margin-bottom:.45em;
 }
 .dock.loading .msg{letter-spacing:.3em; opacity:.6}
+
+/* ───────── 共有ボタン ───────── */
+.acts{display:flex; gap:.5em; justify-content:flex-end; margin-top:.6em}
+.bubble.loading .acts, .dock.loading .acts{display:none}
+.sh-btn{
+  font-family:"DotGothic16",sans-serif; font-size:.62rem; letter-spacing:.08em;
+  padding:.4em .8em; border:1px solid currentColor; border-radius:4px;
+  background:transparent; cursor:pointer; opacity:.65;
+  pointer-events:auto; transition:opacity .2s;
+}
+.sh-btn:hover{opacity:1}
+.bubble .sh-btn{color:#6a4a2c}
+.dock .sh-btn{color:#ffce8a}
+
+/* ───────── トースト ───────── */
+#sh-toast{
+  position:fixed; left:50%; bottom:11%;
+  transform:translateX(-50%) translateY(10px);
+  z-index:30;
+  background:rgba(20,13,9,.95); color:#f4ecd8;
+  font-family:"DotGothic16",sans-serif; font-size:.8rem; letter-spacing:.1em;
+  padding:.7em 1.2em; border:1px solid #5a3d22; border-radius:6px;
+  opacity:0; pointer-events:none;
+  transition:opacity .3s ease, transform .3s ease;
+}
+#sh-toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
 
 @media (max-width:520px){
   .gate-lead{font-size:.92rem}
